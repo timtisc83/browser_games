@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoop to Dreamliner | ODCE</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--tq:#00C1D4;--blue:#143AFF;--violet:#7200FE;--mint:#5AFFC5;--red:#FF4F4F;--yellow:#FFDE36;--orange:#FF7E15;--gray:#D0D0CE;--ink:#0b1430;--muted:#5b6478}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:'Poppins','Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;position:relative;overflow-x:hidden}
+.circuit{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5}
+#app{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:16px 18px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 14px;border-bottom:2px dashed var(--tq);margin-bottom:18px}
+header .logo{width:64px;height:auto;display:block}
+header .meta{font-size:.78rem;color:var(--muted);text-align:right;line-height:1.3}
+.wide #app{max-width:1000px}
+h1{font-size:2rem;line-height:1.1;margin:.2em 0 .3em;color:var(--tq);font-weight:700}
+h2{font-size:1.35rem;line-height:1.25;margin:.3em 0 .5em;font-weight:700}
+p{line-height:1.55;margin:.5em 0}
+.lead{font-size:1.05rem;color:var(--muted)}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:3px;color:#fff;background:var(--blue)}
+.tag.rank{background:var(--violet)}.tag.est{background:var(--blue)}.tag.pick{background:var(--tq);color:#000}
+.progress{height:6px;background:#eef1f5;border-radius:3px;overflow:hidden;margin:6px 0 16px}
+.progress>i{display:block;height:100%;background:var(--tq);transition:width .3s}
+.qhead{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
+.hint{font-size:.88rem;color:var(--muted);margin:-.2em 0 .9em}
+.btn{appearance:none;border:0;background:var(--blue);color:#fff;font:inherit;font-weight:600;font-size:1rem;padding:13px 22px;border-radius:6px;cursor:pointer;min-height:48px}
+.btn:hover{filter:brightness(1.1)}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible{outline:3px solid var(--tq);outline-offset:2px}
+.btn[disabled]{background:var(--gray);color:#777;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn.block{width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.row .btn{flex:1}
+input[type=text]{width:100%;font:inherit;font-size:1.05rem;padding:12px 14px;border:2px solid var(--gray);border-radius:6px}
+label{font-weight:600;font-size:.9rem;display:block;margin:16px 0 6px}
+.rules{border-left:4px solid var(--tq);background:#f4fcfd;padding:10px 14px;margin:16px 0;font-size:.93rem}
+.rules ul{margin:.3em 0;padding-left:1.1em}.rules li{margin:.25em 0}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--gray);background:#fff;border-radius:8px;padding:12px 14px;font:inherit;font-size:1rem;cursor:pointer;min-height:56px;color:var(--ink);transition:border-color .15s,background .15s}
+.opt:hover:not([disabled]){border-color:var(--tq)}
+.opt .badge{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;background:var(--gray);font-size:.95rem}
+.opt .name{flex:1;font-weight:600;line-height:1.25}
+.opt .name small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.opt.sel{border-color:var(--blue);background:#f1f4ff}
+.opt.sel .badge{background:var(--blue)}
+.opt.ok{border-color:#16b98a;background:#ecfff8}
+.opt.ok .badge{background:#16b98a}
+.opt.bad{border-color:var(--red);background:#fff3f3}
+.opt.bad .badge{background:var(--red)}
+.opt[disabled]{cursor:default}
+.est{border:2px solid var(--gray);border-radius:8px;padding:18px 16px}
+.est .val{font-size:2rem;font-weight:700;color:var(--blue);text-align:center;margin-bottom:8px}
+.est input[type=range]{width:100%;accent-color:var(--blue);height:36px}
+.est .scale{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+.est .steps{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.est .steps button{font:inherit;font-weight:600;border:2px solid var(--gray);background:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;min-width:58px}
+.fb{margin-top:16px;border-radius:8px;padding:14px 16px;border:2px solid var(--tq);background:#f4fcfd;animation:pop .25s ease-out}
+.fb .pts{font-size:1.5rem;font-weight:700}
+.fb .pts.hi{color:#0b8f69}.fb .pts.mid{color:var(--orange)}.fb .pts.lo{color:var(--red)}
+.fb table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:8px}
+.fb td{padding:5px 4px;border-top:1px dotted #b9c3cc}
+.fb td:last-child{text-align:right;font-weight:600}
+.why{font-size:.92rem;margin-top:8px}
+@keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.score{text-align:center;padding:10px 0}
+.score .big{font-size:5rem;font-weight:700;line-height:1;color:var(--blue)}
+.score .who{font-size:1.4rem;font-weight:700;margin-top:6px}
+.score .time{color:var(--muted)}
+.tier{display:inline-block;margin-top:10px;padding:6px 14px;background:var(--mint);font-weight:700;border-radius:4px}
+.attempt{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:4px;background:var(--yellow);font-size:.82rem;font-weight:700}
+.breakdown{width:100%;border-collapse:collapse;margin-top:18px;font-size:.9rem}
+.breakdown td{padding:8px 4px;border-bottom:1px dashed var(--gray)}
+.breakdown td:last-child{text-align:right;font-weight:700}
+.bar{height:6px;background:#eef1f5;border-radius:3px;margin-top:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--tq)}
+.take{margin-top:20px;border-left:4px solid var(--violet);padding:8px 14px;background:#f7f2ff;font-size:.93rem}
+.data{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:10px}
+.data th,.data td{padding:7px 8px;border-bottom:1px solid #e3e7ec;text-align:right;white-space:nowrap}
+.data th:first-child,.data td:first-child{text-align:left}
+.data thead th{color:var(--tq);border-bottom:2px solid var(--tq)}
+.scroll{overflow-x:auto}
+.key{display:grid;gap:10px;margin-top:10px}
+.key div{border:1px solid #e3e7ec;border-left:4px solid var(--blue);padding:8px 12px;border-radius:4px;font-size:.92rem}
+.small{font-size:.8rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){h1{font-size:1.65rem}.score .big{font-size:4rem}}
+</style>
+</head>
+<body>
+<svg class="circuit" aria-hidden="true" viewBox="0 0 400 800" preserveAspectRatio="xMaxYMin slice">
+  <g fill="none" stroke="#00C1D4" stroke-width="1.5">
+    <path d="M400 60 H320 V180 H260" stroke-dasharray="6 6"/>
+    <path d="M400 300 H350 V420" />
+    <path d="M0 640 H70 V720 H140" stroke-dasharray="2 6" stroke-linecap="round"/>
+    <circle cx="260" cy="180" r="6"/><circle cx="350" cy="420" r="6" fill="#00C1D4"/>
+    <rect x="134" y="714" width="12" height="12" fill="#143AFF" stroke="none"/>
+    <path d="M400 520 a60 60 0 0 0 -60 60" stroke="#143AFF"/>
+  </g>
+</svg>
+<div id="app"></div>
+<script>
+/* =====================================================================
+   GAME DATA - edit here. Source: Ulrich & Eppinger, Product Design and
+   Development (McGraw-Hill), Exhibit 1-3. All figures approximate.
+   ===================================================================== */
+const PRODUCTS = {
+  scoop:  {name:"Belle-V Ice Cream Scoop", short:"Ice cream scoop", color:"#FF7E15", vol:10000,  life:10, price:40,        parts:2,      devTime:1, team:2,     devCost:1e5,   prodInv:2e4},
+  probe:  {name:"AvaTech Avalanche Probe", short:"Avalanche probe", color:"#7200FE", vol:1000,   life:3,  price:2250,      parts:175,    devTime:2, team:12,    devCost:1e6,   prodInv:2.5e5},
+  roomba: {name:"iRobot Roomba Vacuum Cleaner", short:"Roomba", color:"#00C1D4", vol:2000000, life:2,  price:500,       parts:1000,   devTime:2, team:100,   devCost:5e7,   prodInv:1e7},
+  tesla:  {name:"Tesla Model S", short:"Tesla Model S", color:"#143AFF", vol:50000,  life:5,  price:80000,     parts:10000,  devTime:4, team:1000,  devCost:5e8,   prodInv:5e8},
+  boeing: {name:"Boeing 787 Aircraft", short:"Boeing 787", color:"#0b1430", vol:120,    life:40, price:250e6,     parts:130000, devTime:7, team:10000, devCost:15e9,  prodInv:15e9}
+};
+const IDS = Object.keys(PRODUCTS);
+const perUnit = id => PRODUCTS[id].devCost / (PRODUCTS[id].vol * PRODUCTS[id].life);
+
+const GAME_DATA = {
+  title: "From Scoop to Dreamliner",
+  subtitle: "How much does it take to develop a product?",
+  questions: [
+    {type:"rank", q:"Rank the five products by development cost.", dir:"lowest → highest", key:"devCost", asc:true, fmt:"money",
+     why:"Development cost scales with product complexity: from $100k for a two-part scoop to $15 billion for an aircraft with 130,000 unique parts."},
+    {type:"est", q:"How many unique parts (part numbers) does a Boeing 787 have?", answer:130000, min:1000, max:10000000, fmt:"num", unit:"parts",
+     why:"About 130,000 unique parts, compared with 10,000 for a car and 2 for an ice cream scoop."},
+    {type:"rank", q:"Rank the products by annual production volume.", dir:"highest → lowest", key:"vol", asc:false, fmt:"units",
+     why:"Volume does not follow complexity. The Roomba sells 2 million units a year, the avalanche probe only 1,000, fewer than the scoop."},
+    {type:"est", q:"How large was the internal Tesla Model S development team at its peak?", answer:1000, min:10, max:100000, fmt:"num", unit:"people",
+     why:"About 1,000 people over roughly 4 years. The 787 needed about 10,000 people over 7 years."},
+    {type:"pick", q:"Development cost per unit sold: which product has the lowest?", sub:"Development cost ÷ (annual volume × sales lifetime)", answer:"scoop",
+     detail: id => fmtMoney(perUnit(id)) + " per unit",
+     why:"The scoop: $100,000 ÷ (10,000 × 10 years) = about $1 per unit. The Roomba needs about $12.50, the probe about $333, the Tesla about $2,000, the 787 about $3.1 million per aircraft."},
+    {type:"rank", q:"Rank the products by sales lifetime.", dir:"longest → shortest", key:"life", asc:false, fmt:"years",
+     why:"The 787 is sold for about 40 years, the scoop for 10. Consumer electronics like the Roomba are replaced after about 2 years."},
+    {type:"est", q:"What did it cost to develop the iRobot Roomba?", answer:5e7, min:1e5, max:1e10, fmt:"money", unit:"",
+     why:"About $50 million, with 100 people over 2 years, plus about $10 million production investment."},
+    {type:"pick", q:"Development cost per unit as a share of the sales price: which product has the highest share?", sub:"Think volume × lifetime versus price", answer:"probe",
+     detail: id => (100*perUnit(id)/PRODUCTS[id].price).toFixed(1).replace(/\.0$/,"") + "% of price",
+     why:"The avalanche probe: about $333 development cost per unit on a $2,250 price, roughly 15%. For scoop, Roomba and Tesla it is about 2.5%, for the 787 about 1.25%. Low-volume niche products must recover their development cost from few units."}
+  ],
+  tiers: [[90,"Development Director"],[70,"Senior Product Engineer"],[45,"Project Engineer"],[0,"Junior Engineer"]],
+  takeaway: "Development effort scales with product complexity, but whether it pays off depends on volume × lifetime × price. That is why development costs per unit range from $1 (scoop) to $3 million (Boeing 787)."
+};
+const STORE_KEY = "odce_game_scoop_to_dreamliner_attempts";
+const ESTIMATE_FULL = Math.log10(1.25); // within ±25% = 100%
+const ESTIMATE_ZERO = 1;                // off by factor 10 or more = 0%
+
+/* ===================== helpers ===================== */
+const $app = document.getElementById("app");
+const LOGO = `<svg role="img" aria-label="ODCE logo" style="width:100%;height:auto" viewBox="0 0 96.605103 82.199448" version="1.1" id="svg5" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" ><defs id="defs2" /><g id="layer1" transform="translate(117.23172,-149.41432)"><path id="path549-01-9-8" style="fill:#143aff;stroke:#000000;stroke-width:0.264583" d="m -20.758898,149.5762 a 0.02963265,0.02963265 0 0 1 -0.02963,0.0296 0.02963265,0.02963265 0 0 1 -0.02963,-0.0296 0.02963265,0.02963265 0 0 1 0.02963,-0.0296 0.02963265,0.02963265 0 0 1 0.02963,0.0296 z" /><path style="fill:none;fill-opacity:1;stroke:#143aff;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1" d="m -116.43796,230.55898 59.621691,0.26104 h 6.8089 l 27.00638,-23.65599 v -50.64865 l -38.93207,0.22247 -54.504901,21.22023 z" id="path28826-0-8-5-8" /><g aria-label="ODCE" id="text9450-0-6-9-9-7-8-9" style="font-weight:bold;font-size:19.7556px;line-height:0.8;font-family:'BC Novatica TEST';-inkscape-font-specification:'BC Novatica TEST, Bold';letter-spacing:-0.5715px;fill:#143aff;stroke-width:0.539294;stroke-linecap:round"><path d="m -102.06223,223.39662 c 4.504274,0 7.270058,-2.6275 7.270058,-7.32933 0,-4.70183 -2.765784,-7.32933 -7.270058,-7.32933 -4.52404,0 -7.28982,2.6275 -7.28982,7.32933 0,4.70183 2.76578,7.32933 7.28982,7.32933 z m 0,-3.14114 c -2.23239,0 -3.65479,-1.56069 -3.65479,-4.18819 0,-2.62749 1.4224,-4.18819 3.65479,-4.18819 2.212624,0 3.635027,1.5607 3.635027,4.18819 0,2.6275 -1.422403,4.18819 -3.635027,4.18819 z" id="path34047" /><path d="m -93.783207,223.12004 h 6.183503 c 3.753564,0 6.795927,-1.89654 6.795927,-7.05275 0,-5.15621 -3.042363,-7.05275 -6.795927,-7.05275 h -6.183503 z m 5.294501,-3.12138 h -1.857026 v -7.86273 h 1.857026 c 3.239919,0 4.049898,1.34338 4.049898,3.93136 0,2.58799 -0.809979,3.93137 -4.049898,3.93137 z" id="path34049" /><path d="m -73.05818,223.39662 c 3.101629,0 6.440326,-1.81752 6.637882,-5.84766 h -3.654786 c -0.217312,1.85703 -1.698982,2.70652 -2.983096,2.70652 -2.15336,0 -3.496741,-1.44216 -3.496741,-4.20794 0,-2.72628 1.343381,-4.16844 3.496741,-4.16844 1.284114,0 2.78554,0.82974 2.983096,2.70652 h 3.654786 c -0.197556,-4.0499 -3.536253,-5.84766 -6.637882,-5.84766 -4.286965,0 -7.131771,2.54848 -7.131771,7.30958 0,4.80061 2.844806,7.34908 7.131771,7.34908 z" id="path34051" /><path d="m -65.411352,223.12004 h 10.806313 v -3.12138 h -7.368838 v -2.37068 h 6.381058 v -3.12138 h -6.381058 v -2.37067 h 7.27006 v -3.12139 h -10.707535 z" id="path34053" /></g></g></svg>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function sig2(x){ if(x===0) return 0; const p=Math.floor(Math.log10(Math.abs(x)))-1; const f=Math.pow(10,p); return Math.round(x/f)*f; }
+function fmtNum(x){ return Math.round(x).toLocaleString("en-US"); }
+function fmtMoney(x){
+  if(x>=1e9) return "$"+(+(x/1e9).toPrecision(3))+" billion";
+  if(x>=1e6) return "$"+(+(x/1e6).toPrecision(3))+" million";
+  if(x>=100) return "$"+fmtNum(x);
+  return "$"+(+x.toPrecision(3)).toFixed(2).replace(/\.00$/,"");
+}
+function fmtVal(x,fmt,unit){
+  if(fmt==="money") return fmtMoney(x);
+  if(fmt==="units") return fmtNum(x)+" / year";
+  if(fmt==="years") return x+(x===1?" year":" years");
+  return fmtNum(x)+(unit?" "+unit:"");
+}
+function store(){ try{return JSON.parse(localStorage.getItem(STORE_KEY)||"0")||0;}catch(e){return 0;} }
+function bump(){ const n=store()+1; try{localStorage.setItem(STORE_KEY,JSON.stringify(n));}catch(e){} return n; }
+function fmtTime(ms){ const s=Math.round(ms/1000); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function header(meta){ return `<header><div class="logo" aria-label="ODCE">${LOGO}</div><div class="meta">${meta||"Institute for Organizational Design<br>and Collaboration Engineering · TUHH"}</div></header>`; }
+
+/* ===================== scoring ===================== */
+function rankScore(order, correct){
+  let d=0; order.forEach((id,i)=>{ d+=Math.abs(i-correct.indexOf(id)); });
+  return Math.max(0, Math.round(100*(1-d/8)));       // one adjacent swap = 75%
+}
+function estScore(guess, ans){
+  const e=Math.abs(Math.log10(guess/ans));
+  if(e<=ESTIMATE_FULL) return 100;
+  return Math.max(0, Math.round(100*(1-(e-ESTIMATE_FULL)/(ESTIMATE_ZERO-ESTIMATE_FULL))));
+}
+function correctOrder(q){ return IDS.slice().sort((a,b)=> q.asc ? PRODUCTS[a][q.key]-PRODUCTS[b][q.key] : PRODUCTS[b][q.key]-PRODUCTS[a][q.key]); }
+
+/* ===================== state ===================== */
+const S = {nick:"", i:0, scores:[], start:0, end:0, attempt:0};
+
+/* ===================== screens ===================== */
+function welcome(){
+  const n=store();
+  $app.innerHTML = header() + `
+    <span class="tag">5-minute challenge</span>
+    <h1>${GAME_DATA.title}</h1>
+    <p class="lead">${GAME_DATA.subtitle} Five real products, from an ice cream scoop to a Boeing 787. Rank, estimate and pick your way to 100%.</p>
+    <div class="rules"><ul>
+      <li><b>8 rounds:</b> 3 rankings, 3 estimates, 2 picks.</li>
+      <li><b>Rankings:</b> tap the products in order. The closer, the more points.</li>
+      <li><b>Estimates:</b> within ±25% gives full points, off by a factor of 10 gives zero.</li>
+      <li>Play alone, no googling. Your time breaks ties.</li>
+    </ul></div>
+    <label for="nick">Your nickname</label>
+    <input id="nick" type="text" maxlength="24" autocomplete="off" placeholder="e.g. Ada" value="${esc(S.nick)}">
+    ${n?`<p class="small">This device has already played ${n}×. Only your first attempt counts.</p>`:""}
+    <div class="row"><button class="btn block" id="go" ${S.nick?"":"disabled"}>Start</button></div>`;
+  const inp=document.getElementById("nick"), go=document.getElementById("go");
+  inp.addEventListener("input",()=>{ go.disabled=!inp.value.trim(); });
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter" && inp.value.trim()) go.click(); });
+  go.onclick=()=>{ S.nick=inp.value.trim().slice(0,24); S.i=0; S.scores=[]; S.start=Date.now(); question(); };
+  inp.focus();
+}
+
+function qFrame(q, body){
+  const n=GAME_DATA.questions.length, lab={rank:"Rank",est:"Estimate",pick:"Pick"}[q.type];
+  return header(`${esc(S.nick)}<br>Score so far: ${S.scores.length?Math.round(S.scores.reduce((a,b)=>a+b,0)/S.scores.length):0}%`) + `
+    <div class="qhead"><span class="tag ${q.type}">${lab}</span><span>Round ${S.i+1} / ${n}</span></div>
+    <div class="progress"><i style="width:${100*S.i/n}%"></i></div>
+    <h2>${q.q}</h2>${body}<div id="fb" aria-live="polite"></div>`;
+}
+
+function question(){
+  const q=GAME_DATA.questions[S.i];
+  if(q.type==="rank") rankQ(q); else if(q.type==="est") estQ(q); else pickQ(q);
+  window.scrollTo({top:0});
+}
+
+function optBtn(id, badge, extra){ const p=PRODUCTS[id]; return `<button class="opt" data-id="${id}"><span class="badge">${badge}</span><span class="name">${p.name}${extra?`<small>${extra}</small>`:""}</span></button>`; }
+
+function rankQ(q){
+  const items=shuffle(IDS); let order=[];
+  $app.innerHTML = qFrame(q, `<p class="hint">Tap in order: <b>${q.dir}</b>. Tap again to undo.</p>
+    <div class="opts" id="opts">${items.map(id=>optBtn(id,"·")).join("")}</div>
+    <div class="row"><button class="btn ghost" id="clr">Clear</button><button class="btn" id="sub" disabled>Lock in</button></div>`);
+  const paint=()=>{ document.querySelectorAll(".opt").forEach(b=>{ const k=order.indexOf(b.dataset.id); b.classList.toggle("sel",k>=0); b.querySelector(".badge").textContent=k>=0?k+1:"·"; });
+    document.getElementById("sub").disabled = order.length!==IDS.length; };
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ const id=b.dataset.id, k=order.indexOf(id); if(k>=0) order.splice(k,1); else order.push(id); paint(); });
+  document.getElementById("clr").onclick=()=>{ order=[]; paint(); };
+  document.getElementById("sub").onclick=()=>{
+    const corr=correctOrder(q), pts=rankScore(order,corr);
+    document.querySelectorAll(".opt").forEach(b=>{ b.disabled=true; const id=b.dataset.id; b.classList.remove("sel"); b.classList.add(order.indexOf(id)===corr.indexOf(id)?"ok":"bad"); });
+    document.getElementById("clr").remove(); document.getElementById("sub").remove();
+    const rows=corr.map((id,i)=>`<tr><td>${i+1}. ${PRODUCTS[id].short}${order.indexOf(id)===i?" ✓":` <span class="small">(you: ${order.indexOf(id)+1})</span>`}</td><td>${fmtVal(PRODUCTS[id][q.key],q.fmt)}</td></tr>`).join("");
+    feedback(pts, `<table>${rows}</table>`, q.why);
+  };
+}
+
+function estQ(q){
+  const lo=Math.log10(q.min), hi=Math.log10(q.max), N=1000;
+  const toVal=v=> sig2(Math.pow(10, lo+(hi-lo)*v/N));
+  const startV=Math.round(N*(0.5+ (Math.random()-.5)*.3));
+  $app.innerHTML = qFrame(q, `<p class="hint">Drag the slider (logarithmic scale). Fine-tune with the buttons.</p>
+    <div class="est"><div class="val" id="val"></div>
+      <input type="range" id="rng" min="0" max="${N}" step="1" value="${startV}" aria-label="Your estimate">
+      <div class="scale"><span>${fmtVal(q.min,q.fmt,"")}</span><span>${fmtVal(q.max,q.fmt,"")}</span></div>
+      <div class="steps"><button id="m" aria-label="decrease">−</button><button id="p" aria-label="increase">+</button></div></div>
+    <div class="row"><button class="btn block" id="sub">Lock in</button></div>`);
+  const r=document.getElementById("rng"), out=document.getElementById("val");
+  const show=()=>{ out.textContent=fmtVal(toVal(+r.value),q.fmt,q.unit); };
+  r.oninput=show; show();
+  document.getElementById("m").onclick=()=>{ r.value=Math.max(0,+r.value-5); show(); };
+  document.getElementById("p").onclick=()=>{ r.value=Math.min(N,+r.value+5); show(); };
+  document.getElementById("sub").onclick=()=>{
+    const g=toVal(+r.value), pts=estScore(g,q.answer);
+    r.disabled=true; document.querySelectorAll(".steps button").forEach(b=>b.disabled=true); document.getElementById("sub").remove();
+    const f=g/q.answer, off = f>=1 ? `${(+f.toPrecision(2))}× too high` : `${(+(1/f).toPrecision(2))}× too low`;
+    feedback(pts, `<table><tr><td>Your estimate</td><td>${fmtVal(g,q.fmt,q.unit)}</td></tr><tr><td>Actual (approx.)</td><td>${fmtVal(q.answer,q.fmt,q.unit)}</td></tr><tr><td>Deviation</td><td>${pts===100?"spot on":off}</td></tr></table>`, q.why);
+  };
+}
+
+function pickQ(q){
+  const items=shuffle(IDS);
+  $app.innerHTML = qFrame(q, `<p class="hint">${q.sub}</p><div class="opts">${items.map((id,i)=>optBtn(id,String.fromCharCode(65+i))).join("")}</div>`);
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const pick=b.dataset.id, pts= pick===q.answer?100:0;
+    document.querySelectorAll(".opt").forEach(o=>{ o.disabled=true; const id=o.dataset.id;
+      if(id===q.answer) o.classList.add("ok"); else if(id===pick) o.classList.add("bad");
+      o.querySelector(".name").insertAdjacentHTML("beforeend",`<small>${q.detail(id)}</small>`); });
+    feedback(pts, "", q.why);
+  });
+}
+
+function feedback(pts, html, why){
+  S.scores.push(pts);
+  const last=S.i===GAME_DATA.questions.length-1, cls=pts>=75?"hi":pts>=40?"mid":"lo";
+  document.getElementById("fb").innerHTML = `<div class="fb"><div class="pts ${cls}">${pts}% on this round</div>${html}<p class="why">${why}</p></div>
+    <div class="row"><button class="btn block" id="next">${last?"See my result":"Next round"}</button></div>`;
+  const nx=document.getElementById("next"); nx.focus({preventScroll:true});
+  document.getElementById("fb").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"start"});
+  nx.onclick=()=>{ if(last){ S.end=Date.now(); S.attempt=bump(); results(); } else { S.i++; question(); } };
+}
+
+function results(){
+  const total=Math.round(S.scores.reduce((a,b)=>a+b,0)/S.scores.length);
+  const tier=GAME_DATA.tiers.find(t=>total>=t[0])[1];
+  const lab={rank:"Rank",est:"Estimate",pick:"Pick"};
+  $app.innerHTML = header() + `
+    <div class="score"><span class="tag">Final result</span>
+      <div class="big">${total}%</div>
+      <div class="who">${esc(S.nick)}</div>
+      <div class="time">Time: ${fmtTime(S.end-S.start)}</div>
+      <div class="tier">${tier}</div><br>
+      ${S.attempt>1?`<span class="attempt">Attempt #${S.attempt} on this device</span>`:""}
+    </div>
+    <p class="small" style="text-align:center">Keep this screen open and show it when your lecturer asks for the winners.</p>
+    <table class="breakdown">${GAME_DATA.questions.map((q,i)=>`<tr><td>${i+1}. ${lab[q.type]}: ${q.q}<div class="bar"><i style="width:${S.scores[i]}%"></i></div></td><td>${S.scores[i]}%</td></tr>`).join("")}</table>
+    <div class="take"><b>Takeaway.</b> ${GAME_DATA.takeaway}</div>
+    <div class="row"><button class="btn ghost" id="again">Play again</button></div>
+    <p class="small">Data: Ulrich &amp; Eppinger, <i>Product Design and Development</i>, McGraw-Hill, Exhibit 1-3. All figures approximate.</p>`;
+  document.getElementById("again").onclick=welcome;
+}
+
+/* ===================== host view (?host=true) ===================== */
+function host(){
+  document.body.classList.add("wide");
+  const rows=[["Annual production volume","vol",v=>fmtNum(v)],["Sales lifetime","life",v=>v+" yrs"],["Sales price","price",fmtMoney],["Unique parts","parts",fmtNum],["Development time","devTime",v=>v+" yrs"],["Peak team size","team",fmtNum],["Development cost","devCost",fmtMoney],["Production investment","prodInv",fmtMoney]];
+  const key=GAME_DATA.questions.map((q,i)=>{
+    let a;
+    if(q.type==="rank") a=correctOrder(q).map(id=>PRODUCTS[id].short).join(" → ");
+    else if(q.type==="est") a=fmtVal(q.answer,q.fmt,q.unit);
+    else a=PRODUCTS[q.answer].name;
+    return `<div><b>${i+1}. ${q.q}</b>${q.dir?` (${q.dir})`:""}<br>Answer: ${a}<br><span class="small">${q.why}</span></div>`; }).join("");
+  const studentUrl=location.href.split("?")[0];
+  $app.innerHTML = header("Host view · answer key") + `
+    <h1>${GAME_DATA.title}: answer key</h1>
+    <p class="lead">Students play individually on their own devices. Afterwards ask: "Who has 90% or more?", then go down until a winner remains. Ties: shorter time wins. Attempts beyond the first are flagged on the result screen.</p>
+    <div class="row" style="max-width:420px"><button class="btn" id="copy">Copy student link</button></div>
+    <h2 style="margin-top:24px">Data (Exhibit 1-3)</h2>
+    <div class="scroll"><table class="data"><thead><tr><th></th>${IDS.map(id=>`<th>${PRODUCTS[id].short}</th>`).join("")}</tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${r[0]}</td>${IDS.map(id=>`<td>${r[2](PRODUCTS[id][r[1]])}</td>`).join("")}</tr>`).join("")}
+      <tr><td><b>Dev. cost per unit sold</b></td>${IDS.map(id=>`<td><b>${fmtMoney(perUnit(id))}</b></td>`).join("")}</tr>
+      <tr><td><b>… as share of price</b></td>${IDS.map(id=>`<td><b>${(100*perUnit(id)/PRODUCTS[id].price).toFixed(1)}%</b></td>`).join("")}</tr></tbody></table></div>
+    <h2 style="margin-top:24px">Rounds and answers</h2><div class="key">${key}</div>
+    <div class="take"><b>Takeaway.</b> ${GAME_DATA.takeaway}</div>
+    <p class="small">Scoring: each round 0–100%, total = mean of 8 rounds. Rankings lose 12.5 points per position of displacement (one adjacent swap = 75%). Estimates: ±25% = 100%, linear on log scale to 0% at factor 10. Picks: all or nothing.</p>`;
+  document.getElementById("copy").onclick=e=>{ (navigator.clipboard?navigator.clipboard.writeText(studentUrl):Promise.reject()).then(()=>e.target.textContent="Copied").catch(()=>prompt("Student link:",studentUrl)); };
+}
+
+new URLSearchParams(location.search).get("host")==="true" ? host() : welcome();
+</script>
+</body>
+</html>
